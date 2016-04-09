@@ -2,10 +2,15 @@
  * Game.h - Header file contain some definition and some function prototype
  * for handle the states of the game.
  *
- * Date: March 2015
- * Rev: 1.0
- * Author: Team 8 - Fundamental of C++ Programming
+ * Date: April 2016
+ * Rev: 1.1
+ * Author: Team 8
+ * Group: TNMT - Fundamental of C++ Programming
  * Ho Chi Minh University of Technology
+ * 
+ * Revision History:
+ * - 1.0: First release
+ * - 1.1: add one more state - BeforeQuit, undefine PLAYER1X
 */
 
 #ifndef __GAME_H__
@@ -27,12 +32,10 @@ typedef enum
 	GamePlay_Config,
 	GamePlay_Playing,
 	Information,
+	BeforeQuit,
 	Quit,
 	Error = 0xFF
 } State;
-
-//State GameState = Menu;
-//CaroBoard board_c;
 
 State Game_Menu(void);
 State Game_Playing(void);

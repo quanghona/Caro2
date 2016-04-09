@@ -1,21 +1,31 @@
 /*
  * Game.cpp - C++ Source file for handling the game states
  * 
- * Date: March 2015
+ * Date: April 2016
  * Rev: 1.0
- * Author: Team 8 - Fundamental of C++ Programming
+ * Author: Team 8
+ * Group: TNMT - Fundamental of C++ Programming
  * Ho Chi Minh University of Technology
+ * 
+ * Revision History:
+ *  - 1.0: First release
+ *  - 1.1: update Game_Information(), fix and update Game_Playing_CheckingInput()
+ * 			fix Game_Menu()
 */
 
 #include <iostream>
 #include <stdint.h>
+#include <stdlib.h>
 #include <string>
+#include <conio.h>
 #include "Board.h"
 #include "Game.h"
 using namespace std;
 
 /****************************Private Definitions******************************/
 #define SKIPSPACECHAR	while(i < strInput.length()) if (strInput.at(i) == ' ') i++;else break
+#define SAMPLEBOARD_HEIGHT	5
+#define SAMPLEBOARD_WIDTH	8
 //#define _DEBUG_CHECKINGINPUT_
 
 /*************************Private function prototypes*************************/
@@ -57,7 +67,7 @@ State Game_Menu(void)
 	do
 	{
 		cout << "Please pick your choice: ";
-		cin >> ui8Input;
+		ui8Input = _getch();
 	} while (!Game_Menu_CheckInput(ui8Input));
 
 	//Handle the input
@@ -75,7 +85,7 @@ State Game_Menu(void)
 		case '3':
 		case 'q':
 		case 'Q':
-			return Quit;
+			return BeforeQuit;
 			break;
 		
 		default:		//Input error
@@ -122,6 +132,8 @@ State Game_Playing(void)
 
 	if (board_c.CheckFull())
 	{
+		system("cls");
+		board_c.DrawBoard();
 		cout << "Game end. No one win this game!" << endl;
 		goto newgame;
 	}
@@ -168,6 +180,42 @@ void Game_Information(void)
 	"information like the number of the board's width and height." << endl << endl;
 	cout << "Note: The maximun number of height and width are 26 and 25 respectively." << \
 	"And the number of markers to win the game have to be between 3 and 5." << endl;
+	cout << "Player 1 Marker is O, and player 2 is X." << endl << endl;
+	
+	//print sample board
+	Marker SampleBoard[SAMPLEBOARD_HEIGHT][SAMPLEBOARD_WIDTH];	//create sample board
+	for (int i = 0, j = 0; i < SAMPLEBOARD_HEIGHT; j < 7 ? j++ : (i++, j = 0))
+		SampleBoard[i][j] = ' ';		//initialize
+	int RandomPos[2][9];	//get 9 random position to fill marker
+	for (int i = 0; i < 9; i++)
+	{
+		RandomPos[0][i] = rand() % SAMPLEBOARD_HEIGHT;
+		RandomPos[1][i] = rand() % SAMPLEBOARD_WIDTH;
+		for (int j = 0; j < i; j++)
+			if ((RandomPos[0][i] == RandomPos[0][j]) && (RandomPos[1][i] == RandomPos[1][j]))
+			{
+				i--;		//repeat until get a unique position
+				break;
+			}
+	}	
+	for (int i = 0; i < 9; i++)
+		SampleBoard[RandomPos[0][i]][RandomPos[1][i]] = (i < 3 ? 'O' : (i < 6 ? 'X' : '#'));
+	
+	cout << endl << "*";
+	for (int i = 0; i < SAMPLEBOARD_WIDTH; i++)
+		cout << "*" << Alphabet[i];
+	cout << "*" << endl;
+	for (int i = 0; i < SAMPLEBOARD_HEIGHT; i++)
+	{
+		cout << Alphabet[i];
+		for (int j = 0; j < SAMPLEBOARD_WIDTH; j++)
+			cout << " " << SampleBoard[i][j];
+		cout << "*" << endl;
+	}
+	for (int i = 0; i < (SAMPLEBOARD_WIDTH + 1); i++)
+		cout << "**";
+	cout << endl << "Player 1 turn:" << Alphabet[rand() % SAMPLEBOARD_HEIGHT] \
+		 << ", " << Alphabet[rand() % SAMPLEBOARD_WIDTH] << endl <<  endl;
 }
 
 /******************************************************************************
@@ -189,39 +237,22 @@ static bool Game_Playing_CheckingInput(string strInput, uint8_t *pRow, uint8_t *
 	//find the first char which is not a space
 	SKIPSPACECHAR;
 
-#ifdef _DEBUG_CHECKINGINPUT_
-	cout << "First char != ' ', " << "i = " << i << endl << "Input length = " << strInput.length() << endl;
-	system("pause");
-#endif
 	//if player input nothing, ask the player to input again
 	if (i == strInput.length())
 	{
 		cout << "You input nothing. Please try again!" << endl;
 		return false;
 	}
-	else if ((strInput.at(i) == 'q' || strInput.at(i) == 'Q') && (i == strInput.length() - 1))
+	else if ((strInput.at(i) == '~' || strInput.at(i) == '!'))
 	{
 		*pRow = (uint8_t)'Q';
-#ifdef _DEBUG_CHECKINGINPUT_
-	cout << *pRow << endl;
-	system("pause");
-#endif
 		return true;
 	}
 	else 
 	{
-#ifdef _DEBUG_CHECKINGINPUT_
-		cout << "i = " << i << endl;
-		cout << strInput.at(i) << endl;
-		system("pause");
-#endif
 		int iBoardWidth, iBoardHeight;
 		
 		board_c.GetParameters(&iBoardWidth, &iBoardHeight);
-#ifdef _DEBUG_CHECKWIDTHHEIGHT_
-		cout << "width = " << iBoardWidth << "   " << "height = " << iBoardHeight << endl;
-		system("pause");
-#endif
 		//return the Row position
 		if (((strInput.at(i) >= 'A') && (strInput.at(i) < ('A' + (char)iBoardWidth))))
 			*pRow = (uint8_t)(strInput.at(i++) - 'A');
@@ -239,13 +270,22 @@ Nxtchr:	//Find the next character
 			i++;
 			goto Nxtchr;
 		}
+		
+		//Check if player input more than 2 argument
+		unsigned int *temp = new unsigned int;
+		*temp = i++;	//save the current position and detect the remaining string if
+						//is any character left
+		SKIPSPACECHAR;
+		if (i < strInput.length())
+		{
+			cout << "Too much argument. Input again!" << endl;
+			delete temp;
+			return false;
+		}
+		i = *temp;
+		delete temp;
 			
 		//return the Height position
-#ifdef _DEBUG_CHECKINGINPUT_
-		cout << "i = " << i << endl;
-		cout << strInput.at(i) << endl;
-		system("pause");
-#endif
 		//Return the Column position
 		if (((strInput.at(i) >= 'A') && (strInput.at(i) < ('A' + (char)iBoardHeight))))
 			*pCol = (uint8_t)(strInput.at(i++) - 'A');
@@ -257,13 +297,7 @@ Nxtchr:	//Find the next character
 		{
 			cout << "This position has already filled. Pick another position!" << endl;
 			return false;
-		}
-
-#ifdef _DEBUG_CHECKINGINPUT_
-		cout << "Row = " << (int)*pRow << "  Col = " << (int)*pCol << endl;
-		system("pause");
-#endif
-		
+		}		
 		return true;
 	}
 	
@@ -286,7 +320,7 @@ InErr:
  {
 	 if (((ui8Input < '1') || (ui8Input > '3')) && (ui8Input != 'q') && (ui8Input != 'Q'))
 	 {
-		 cout << "Input not correctly. Please type:" << endl << \
+		 cout << endl << "Input not correctly. Please type:" << endl << \
 			"   1 to start a new game" << endl << \
 			"   2 to see some information" << endl << \
 			"   3 or q or Q to exit" << endl;

@@ -13,9 +13,10 @@
  *  4. Game Play  : 2 players playing turn by turn.
  *  5. Quit       : Quit the game.
  * 
- * Date: March 2015
+ * Date: April 2016
  * Rev: 1.1
- * Author: Team 8 - Fundamental of C++ Programming
+ * Author: Team 8
+ * Group: TNMT - Fundamental of C++ Programming
  * Ho Chi Minh University of Technology
  *
  * Revision History:
@@ -45,7 +46,7 @@ void main()
 				break;
 				
 			case GamePlay_Config:
-				GameState = board_c.ConfigBoard() ? GamePlay_Playing : Quit;
+				GameState = board_c.ConfigBoard() ? GamePlay_Playing : (system("pause"), BeforeQuit);
 				break;
 				
 			case GamePlay_Playing:
@@ -60,14 +61,14 @@ void main()
 				GameState = Menu;
 				break;
 				
-			// case Quit:
-				// cout << endl << "Thanks for playing this game!!" << endl;
-				// goto exit;
-				// break;
+			case BeforeQuit:
+				cout << endl << "Thanks for playing this game!!" << endl;
+				GameState = Quit;
+				goto exit;
+				break;
 				
 			case Error:		//This case should never happen
 				cout << "Unexpected Error occurred!" << endl;
-				goto exit;
 				break;
 		}
 	}

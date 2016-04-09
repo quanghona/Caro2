@@ -4,12 +4,14 @@
  * 
  * Date: April 2016
  * Rev: 1.1
- * Author: Team 8 - Fundamental of C++ Programming
+ * Author: Team 8
+ * Group: TNMT - Fundamental of C++ Programming
  * Ho Chi Minh University of Technology
  * 
  * Revision History:
  *  - 1.0: First release
- *  - 1.1: fix function ConfigBoard
+ *  - 1.1: updadte function ConfigBoard(), bring Alphabet table to Board.h, fix 
+ * UpdateBoard() and CheckBoard(), add ConvertChartoNum()
 */
 #include <iostream>
 #include <fstream>
@@ -20,7 +22,10 @@ using namespace std;
 
 /****************************Private Definitions******************************/
 #define GOTONEXTPROCESS			CheckProcess>>=1
-#define BACKTOCURPOS			CurCheckPos_R=Pos_R;CurCheckPos_C=Pos_C=
+#define BACKTOCURPOS			CurCheckPos_R=Pos_R;CurCheckPos_C=Pos_C
+#ifdef _USE_EXTERNAL_FILE_
+	#define READFILEDATAFAIL	File.close();return false
+#endif
 
 /*
 	The related position that is next to the current position
@@ -39,9 +44,9 @@ using namespace std;
 #define NEXTPOS_DL			0x04
 #define NEXTPOS_R			0x02
 #define NEXTPOS_L			0x01
+#define COMPLETE			0x00
 
 /*********************************Variables***********************************/
-const char Alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";	//Alphabet table
 static unsigned int uiCount;
 
 /****************************Function definitions*****************************/
@@ -65,21 +70,56 @@ void CaroBoard::DrawBoard(void)
 {
 	system("cls");
 	//Draw first line contain name of the columns
+#ifdef _EXPORT_TO_FILE_
+	ofstream ExportFile("gameTrace.txt", ios::ate);	//Writing at the end of the file
+	ExportFile << "*";
+#endif
 	cout << "*";
+	
+	
 	for (int i = 0; i < this->Width; i++)
+	{
 		cout << "*" << Alphabet[i];
+#ifdef _EXPORT_TO_FILE_
+		ExportFile << "*" << Alphabet[i];
+#endif		
+	}
+#ifdef _EXPORT_TO_FILE_
+	ExportFile << "*" << endl;
+#endif			
 	cout << "*" << endl;
 	//Draw the board
 	for (int i = 0; i < this->Height; i++)
 	{
 		cout << Alphabet[i];
+#ifdef _EXPORT_TO_FILE_
+		ExportFile << Alphabet[i];
+#endif
 		for (int j = 0; j < this->Width; j++)
+		{
 			cout << " " << this->board[i][j];
+#ifdef _EXPORT_TO_FILE_
+			ExportFile << " " << this->board[i][j];
+#endif			
+		}
 		cout << "*" << endl;
+#ifdef _EXPORT_TO_FILE_	
+		ExportFile << "*" << endl;
+#endif	
 	}
 	//Draw last line
-	for (int i = 0; i < this->Width; i++)
+	for (int i = 0; i <= this->Width; i++)
+	{
 		cout << "**";
+#ifdef _EXPORT_TO_FILE_	
+		ExportFile << "**";
+#endif	
+	}
+	cout << endl;
+#ifdef _EXPORT_TO_FILE_	
+		ExportFile << endl;
+		ExportFile.close();
+#endif	
 }
 
 /******************************************************************************
@@ -99,8 +139,11 @@ void CaroBoard::DrawBoard(void)
  *****************************************************************************/
 void CaroBoard::UpdateBoard(int Pos_R, int Pos_C, Marker M)
 {
-	this->board[Pos_R][Pos_C] = M;
-	uiCount++;
+	if (this->board[Pos_R][Pos_C] == ' ')
+	{
+		this->board[Pos_R][Pos_C] = M;
+		uiCount++;
+	}
 }
 
 /******************************************************************************
@@ -122,83 +165,160 @@ void CaroBoard::UpdateBoard(int Pos_R, int Pos_C, Marker M)
 bool CaroBoard::ConfigBoard(void)
 {
 	system("cls");
-
+#ifdef _EXPORT_TO_FILE_
+	remove("gameTrace.txt");	//Delete the gameTrace history before starting
+								//the new game
+#endif
 	//Input width, height, N of the board
 	cout << "Please setup board's width, height and the number of point to win" << endl;
-config:
+
 #ifdef _USE_EXTERNAL_FILE_
 	fstream File;
-	string strHeader;
+	char strRead[30];
+	
 	File.open("conf.txt");
-	if (File.is_open())
+	if (File.is_open())	//Checking if the file exist
 	{
-		File.getline(strHeader, 100);
-		File.seekg(strHeader.length() + 1);
-		File >> this->Width >> this->Height >> this->N;
+		File.getline(strRead, 30);
+		if (strcmp(strRead,"BTL-CK-Assignment02"))	//Checking header string
+		{
+			cout << "Header format incorrect." << endl << \
+				 "Default setting is loaded: board 20x20, N = 5" << endl;
+			this->Width = this->Height = 20; this->N = 5;
+			File.getline(strRead, 30);	//ignore configuration in the file
+			system("pause");
+		}
+		else
+		{
+			//Get board parameters
+			File >> this->Width >> this->Height >> this->N;	//the last one is to skip the '\0' character
+			if (File.fail())	//check
+			{
+				cout << "Config Error!" << endl;
+				READFILEDATAFAIL;
+			}
+			//Check board parameters
+			if ((this->Width < BOARD_MINN) || (this->Width > BOARD_MAXWIDTH) || \
+				(this->Height < BOARD_MINN) || (this->Height > BOARD_MAXHEIGHT) || \
+				(this->N < BOARD_MINN) || (this->N > BOARD_MAXN))
+				{
+					cout << "Board size out of range!!" << endl;
+					READFILEDATAFAIL;
+				}
+			File.getline(strRead, 30);
+			if (strRead[0] != '\0')		//Check if any character still exist behind the board's parameters
+			{
+				cout << "Format error!" << endl;
+				READFILEDATAFAIL;
+			}
+		}
 	}
 	else
 	{
-		cout << "File not found!";
+		cout << "File not found!" << endl;
 		return false;
 	}
 #else
-	//Reset variable
-	this->Width = 0; this->Height = 0; this->N = 0;uiCount = 0;
+config:	//Reset variable
+	this->Width = 0; this->Height = 0; this->N = 0;
 
 	//The program shall go nowhere if the user input not correct
 	while ((this->Width > BOARD_MAXWIDTH) || (this->Width < BOARD_MINN))
 	{
 		cout << "Width = ";
 
-		cin.clear();
-		cin.ignore();
 		cin >> this->Width;
 		if (cin.fail())
-			cout << "Please enter a number between " << BOARD_MINN << " and " << BOARD_MAXWIDTH << " !" << endl;
+		{
+			cout << "Please enter a number between " << BOARD_MINN << " and " \
+				 << BOARD_MAXWIDTH << " !" << endl;
+			cin.clear();
+			cin.ignore(100, '\n');	 
+		}
 	}
 	while ((this->Height > BOARD_MAXHEIGHT) || (this->Height < BOARD_MINN))
 	{
 		cout << "Height = ";
 
-		cin.clear();
-		cin.ignore();
 		cin >> this->Height;
 		if (cin.fail())
-			cout << "Please enter a number between " << BOARD_MINN << " and " << BOARD_MAXHEIGHT << " !" << endl;
+		{
+			cout << "Please enter a number between " << BOARD_MINN << " and " \
+				 << BOARD_MAXHEIGHT << " !" << endl;
+			cin.clear();
+			cin.ignore(100, '\n');	 	 
+		}
 	}
 	while ((this->N > BOARD_MAXN) || (this->N < BOARD_MINN))
 	{
 		cout << "N = ";
 
-		cin.clear();
-		cin.ignore();
 		cin >> this->N;
 		if (cin.fail())
-			cout << "Please enter a number between " << BOARD_MINN << " and " << BOARD_MAXN << endl;
+		{
+			cout << "Please enter a number between " << BOARD_MINN << " and " \
+				 << BOARD_MAXN << endl;
+			cin.clear();
+			cin.ignore(100, '\n');	 				 
+		}
 	}
 #endif
 	
 	//Additional checking
-	if ((this->Width < this->N) || (this->Height < this->N))
+	if ((this->Width < this->N) && (this->Height < this->N))
 	{
 		cout << "With your configuration. You will never be able to win the game." << \
 			endl << "Try another configuration";
 #ifdef _USE_EXTERNAL_FILE_
 		cout << " and restart the game" << endl;
-		return false;
+		READFILEDATAFAIL;
 #else
 		cout << endl;
 		goto config;
 #endif
-		
 	}
-	
+	uiCount = 0;
+#ifdef _USE_EXTERNAL_FILE_
+	//Get banned positions
+	int BannedPos[100][2];
+	while(!File.eof())	//Read until end of file
+	{
+		File >> strRead;
+		if (strRead[0] == '\0')		//ignore the '\0' character
+			continue;
+		if ((strRead[0] != '(') || (strRead[4] != ')') || (strRead[2] != ',') || (strlen(strRead) > 5))	//check format
+		{
+			cout << "Banned position format incorrect. The correct format is (R,C)" << endl;
+			READFILEDATAFAIL;
+		}
+		//Check if the postion is corrected
+		BannedPos[uiCount][0] = ConvertChartoNum(strRead[1]);
+		if ((BannedPos[uiCount][0] >= this->Height) || (BannedPos[uiCount][0] == -1))
+		{
+			cout << "Banned position iappropriated!" << endl;
+			READFILEDATAFAIL;
+		}
+		BannedPos[uiCount][1] = ConvertChartoNum(strRead[3]);
+		if ((BannedPos[uiCount][1] >= this->Width) || (BannedPos[uiCount][1] == -1))	
+		{
+			cout << "Banned position iappropriated!" << endl;
+			READFILEDATAFAIL;
+		}
+		uiCount++; //increase the number of banned positions
+	}
+#endif
 	this->board = new Marker*[Height];	//Make a new board
 	for (int i = 0; i < this->Height; i++)
 		this->board[i] = new Marker[Width];
-	for (int i = 0, j = 0; (i < this->Height); (j < this->Width) ? (++j) : (i++, j = 0))	//Initialize values for the board
+	for (int i = 0, j = 0; (i < this->Height); (j < (this->Width - 1)) ? (j++) : (i++, j = 0))	//Initialize values for the board
 		this->board[i][j] = ' ';		//By default, all values are empty. But for printing issue, the values is set to ' '
-		
+
+#ifdef _USE_EXTERNAL_FILE_	
+	for (int i = 0; i < (int)uiCount; i++)
+		this->board[BannedPos[i][0]][BannedPos[i][1]] = '#';	//import banned postions to board
+	
+	File.close();
+#endif
 	return true;
 }
 
@@ -227,7 +347,7 @@ bool CaroBoard::CheckBoard(int Pos_R, int Pos_C, Marker CurPlyM)
 	int CurCheckPos_R = Pos_R, CurCheckPos_C = Pos_C;
 	
 	//Start process, begin with the up left direction
-	while (CheckProcess != 0)
+	while (CheckProcess != COMPLETE)
 	{
 		switch (CheckProcess)
 		{
@@ -467,6 +587,25 @@ void CaroBoard::GetParameters(int *Width, int *Height)
 {
 	*Width = this->Width;
 	*Height = this->Height;
+}
+
+/******************************************************************************
+ * Convert a character to number.
+ * Non case sensitive.
+ * a or A = 0, b or B = 1 and so on
+ *
+ * Parameter:
+ *  c: a character to be converted
+ *
+ * Return: number in type int
+ *****************************************************************************/
+inline int CaroBoard::ConvertChartoNum(char c)
+{
+	if ((c >= 'a') && (c <= 'z'))
+		return (int)(c - 'a');
+	if ((c >= 'A') && (c <= 'Z'))
+		return (int)(c - 'A');
+	else return -1;
 }
 
 /* End of Board.cpp */
