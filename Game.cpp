@@ -2,7 +2,7 @@
  * Game.cpp - C++ Source file for handling the game states
  * 
  * Date: April 2016
- * Rev: 1.0
+ * Rev: 1.2
  * Author: Team 8
  * Group: TNMT - Fundamental of C++ Programming
  * Ho Chi Minh University of Technology
@@ -11,6 +11,7 @@
  *  - 1.0: First release
  *  - 1.1: update Game_Information(), fix and update Game_Playing_CheckingInput()
  * 			fix Game_Menu()
+ * 	- 1.2: update Game_Information()
 */
 
 #include <iostream>
@@ -183,9 +184,9 @@ void Game_Information(void)
 	cout << "Player 1 Marker is O, and player 2 is X." << endl << endl;
 	
 	//print sample board
-	Marker SampleBoard[SAMPLEBOARD_HEIGHT][SAMPLEBOARD_WIDTH];	//create sample board
-	for (int i = 0, j = 0; i < SAMPLEBOARD_HEIGHT; j < 7 ? j++ : (i++, j = 0))
-		SampleBoard[i][j] = ' ';		//initialize
+	CaroBoard SampleBoard;
+	
+	SampleBoard.ConfigBoard(SAMPLEBOARD_WIDTH, SAMPLEBOARD_HEIGHT, 5);
 	int RandomPos[2][9];	//get 9 random position to fill marker
 	for (int i = 0; i < 9; i++)
 	{
@@ -199,21 +200,10 @@ void Game_Information(void)
 			}
 	}	
 	for (int i = 0; i < 9; i++)
-		SampleBoard[RandomPos[0][i]][RandomPos[1][i]] = (i < 3 ? 'O' : (i < 6 ? 'X' : '#'));
+		SampleBoard.UpdateBoard(RandomPos[0][i], RandomPos[1][i], (i < 3 ? 'O' : (i < 6 ? 'X' : '#')));
 	
-	cout << endl << "*";
-	for (int i = 0; i < SAMPLEBOARD_WIDTH; i++)
-		cout << "*" << Alphabet[i];
-	cout << "*" << endl;
-	for (int i = 0; i < SAMPLEBOARD_HEIGHT; i++)
-	{
-		cout << Alphabet[i];
-		for (int j = 0; j < SAMPLEBOARD_WIDTH; j++)
-			cout << " " << SampleBoard[i][j];
-		cout << "*" << endl;
-	}
-	for (int i = 0; i < (SAMPLEBOARD_WIDTH + 1); i++)
-		cout << "**";
+	SampleBoard.DrawBoard();
+	
 	cout << endl << "Player 1 turn:" << Alphabet[rand() % SAMPLEBOARD_HEIGHT] \
 		 << ", " << Alphabet[rand() % SAMPLEBOARD_WIDTH] << endl <<  endl;
 }

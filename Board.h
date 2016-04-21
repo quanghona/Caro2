@@ -3,7 +3,7 @@
  * Handle everything related to the board in the game Caro
  * 
  * Date: April 2016
- * Rev: 1.1
+ * Rev: 1.2
  * Author: Team 8
  * Group: TNMT - Fundamental of C++ Programming
  * Ho Chi Minh University of Technology
@@ -12,6 +12,7 @@
  *  - 1.0: First release
  *  - 1.1: fixed function configBoard(), bring Alphabet table to Board.h,
  * add ConvertChartoNum()
+ * 	- 1.2: add ConfigBoard()
 */
 
 #ifndef __BOARD_H__
@@ -32,6 +33,7 @@ class CaroBoard			//A class handle everything related to the caro-board
 {
 	public:
 		bool ConfigBoard(void);
+		bool ConfigBoard(int Width, int Height, int N);
 		void DrawBoard(void);
 		void UpdateBoard(int Pos_R, int Pos_C, Marker M);
 		bool CheckBoard(int Pos_R, int Pos_C, Marker CurPlyM);

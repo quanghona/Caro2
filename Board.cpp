@@ -3,7 +3,7 @@
  * Handle everything related to the board in the game Caro
  * 
  * Date: April 2016
- * Rev: 1.1
+ * Rev: 1.2
  * Author: Team 8
  * Group: TNMT - Fundamental of C++ Programming
  * Ho Chi Minh University of Technology
@@ -12,6 +12,7 @@
  *  - 1.0: First release
  *  - 1.1: updadte function ConfigBoard(), bring Alphabet table to Board.h, fix 
  * UpdateBoard() and CheckBoard(), add ConvertChartoNum()
+ * 	- 1.2: add ConfigBoard(int, int, int), update ConfigBoard(), update UpdateBoard()
 */
 #include <iostream>
 #include <fstream>
@@ -139,10 +140,16 @@ void CaroBoard::DrawBoard(void)
  *****************************************************************************/
 void CaroBoard::UpdateBoard(int Pos_R, int Pos_C, Marker M)
 {
-	if (this->board[Pos_R][Pos_C] == ' ')
+	if ((this->board[Pos_R][Pos_C] == ' ') && (M != ' '))	//fill position
 	{
 		this->board[Pos_R][Pos_C] = M;
 		uiCount++;
+	}
+	else if ((this->board[Pos_R][Pos_C] != ' ') && (M == ' '))	//clear position
+	{
+		this->board[Pos_R][Pos_C] = M;
+		if (uiCount)
+			uiCount--;
 	}
 }
 
@@ -307,9 +314,9 @@ config:	//Reset variable
 		uiCount++; //increase the number of banned positions
 	}
 #endif
-	this->board = new Marker*[Height];	//Make a new board
+	this->board = new Marker*[this->Height];	//Make a new board
 	for (int i = 0; i < this->Height; i++)
-		this->board[i] = new Marker[Width];
+		this->board[i] = new Marker[this->Width];
 	for (int i = 0, j = 0; (i < this->Height); (j < (this->Width - 1)) ? (j++) : (i++, j = 0))	//Initialize values for the board
 		this->board[i][j] = ' ';		//By default, all values are empty. But for printing issue, the values is set to ' '
 
@@ -606,6 +613,36 @@ inline int CaroBoard::ConvertChartoNum(char c)
 	if ((c >= 'A') && (c <= 'Z'))
 		return (int)(c - 'A');
 	else return -1;
+}
+
+/******************************************************************************
+ * Setting up a blank board with known parameters
+ *
+ * Parameter:
+ * 	Width : board width
+ * 	Height: board height
+ *
+ * Return: none
+ *****************************************************************************/
+bool CaroBoard::ConfigBoard(int Width, int Height, int N)
+{
+	if ((N >= BOARD_MINN) && (N <= BOARD_MAXN))
+	{
+		if (((Width < N) && (Height < N)) || (Width > BOARD_MAXWIDTH) || (Height > BOARD_MAXHEIGHT))
+			return false;
+		else
+		{
+			this->Width = Width; this->Height = Height; this->N = N; uiCount = 0;
+			this->board = new int*[Height];
+			for (int i = 0; i < Height; i++)
+				this->board[i] = new int[Width];
+			
+			for (int i = 0, j = 0; (i < this->Height); (j < (this->Width - 1)) ? (j++) : (i++, j = 0))
+				this->board[i][j] = ' ';
+			return true;
+		}
+	}
+	else return false;
 }
 
 /* End of Board.cpp */
