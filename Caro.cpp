@@ -14,7 +14,7 @@
  *  5. Quit       : Quit the game.
  * 
  * Date: April 2016
- * Rev: 1.1
+ * Rev: 1.2
  * Author: Team 8
  * Group: TNMT - Fundamental of C++ Programming
  * Ho Chi Minh University of Technology
@@ -22,12 +22,14 @@
  * Revision History:
  *  - 1.0: First release
  *  - 1.1: fixed main()
+ *  - 1.2: little fix
 */
 
 #include "Game.h"
 #include "Board.h"
 #include <iostream>
 #include <stdint.h>
+#include <Windows.h>
 #include <conio.h>
 using namespace std;
 State GameState = Menu;
@@ -71,7 +73,7 @@ void main()
 				break;
 		}
 	}
-	_getch();
+	Sleep(1000);
 }
 
 /* End of Caro.cpp */

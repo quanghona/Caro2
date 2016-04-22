@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string>
 #include <conio.h>
+#include <Windows.h>
 #include "Board.h"
 #include "Game.h"
 
@@ -147,7 +148,7 @@ State Game_Playing(void)
 				board_c.UpdateBoard((int)ui8Row, (int)ui8Col, ' ');
 			else{
 				cout << "No move to undo!" << endl;		//Stack empty
-				_sleep(500);
+				Sleep(500);
 				return GamePlay_Playing;
 			}
 			break;
