@@ -12,7 +12,7 @@
  *  - 1.0: First release
  *  - 1.1: fixed function configBoard(), bring Alphabet table to Board.h,
  * add ConvertChartoNum()
- * 	- 1.2: add ConfigBoard()
+ * 	- 1.2: add ConfigBoard(int, int int)
 */
 
 #ifndef __BOARD_H__

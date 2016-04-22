@@ -1,9 +1,22 @@
 /*
- * RingStack.h - Header file of ring stack list
+ * RingStack.h - Header file of ring stack list. A ring stack is similar to normal stack
+ * but when it overloaded, it will overwrite the bottom of the stack and the bottom move up 1 level
+ * 
+ * 
+ * 	  Bottom = Top = NULL     Bottom				Top	 Bottom
+ *	  							|					 |	 |
+ *	  							--------			--------	
+ * 	  								    |			|		|
+ *	  									| - Top		--------
+ * 	  	Stack Empty				Normal case			Stack overloaded
+ *
+ * Note: When Stack is overloaded, the program not allocate new memory to the stack but only replace
+ * its value
  *
  * Date: April 2016
  * Rev: 1.0
- * Author: Quang
+ * Author: Ly Hon Quang
+ * e-mail: lyhonquang@gmail.com
  * Ho Chi Minh University of Technology
  */
  
@@ -13,7 +26,7 @@
 /*******************************Definitions***********************************/
 typedef struct Node {
 	int Col, Row;
-	Node *Next, *Pre;
+	Node *pNext, *pPre;
 };
 
 /****************************Function prototypes******************************/

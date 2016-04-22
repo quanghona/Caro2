@@ -11,7 +11,8 @@
  *  - 1.0: First release
  *  - 1.1: update Game_Information(), fix and update Game_Playing_CheckingInput()
  * 			fix Game_Menu()
- * 	- 1.2: update Game_Information()
+ * 	- 1.2: update Game_Information(), update Game_Playing(), update Game_Playing_CheckingInput()
+ * this revision allow user to be able to undo moves
 */
 
 #include <iostream>
@@ -21,13 +22,16 @@
 #include <conio.h>
 #include "Board.h"
 #include "Game.h"
+
+#ifdef UNDOMOVE
+#include "Stack/RingStack.h"
+#endif
 using namespace std;
 
 /****************************Private Definitions******************************/
 #define SKIPSPACECHAR	while(i < strInput.length()) if (strInput.at(i) == ' ') i++;else break
 #define SAMPLEBOARD_HEIGHT	5
 #define SAMPLEBOARD_WIDTH	8
-//#define _DEBUG_CHECKINGINPUT_
 
 /*************************Private function prototypes*************************/
 static bool Game_Playing_CheckingInput(string strInput, uint8_t *pRow, uint8_t *pCol);
@@ -76,6 +80,9 @@ State Game_Menu(void)
 	{
 		case '1':
 			bPlayer1Turn = true;
+#ifdef UNDOMOVE
+			Stack_Init();	//initialize stack
+#endif
 			return GamePlay_Config;
 			break;
 			
@@ -122,14 +129,27 @@ State Game_Playing(void)
 	} while (!Game_Playing_CheckingInput(strInput, &ui8Row, &ui8Col));
 	
 	//if player input 'q' or 'Q', the program will get out to menu immediately
-	if (ui8Row == (uint8_t)'Q')
+	switch (ui8Row)
 	{
-		board_c.DestroyBoard();
-		return Menu;
+		case ((uint8_t)'Q'):
+			board_c.DestroyBoard();
+			return Menu;
+			break;
+#ifdef	UNDOMOVE		
+		case ((uint8_t)'-'):		//if player press '-', it will undo 1 move
+			Stack_Pop(&ui8Row, &ui8Col);
+			if (ui8Row != -1)
+				board_c.UpdateBoard((int)ui8Row, (int)ui8Col, ' ');
+			else cout << "No move to undo!" << endl;		//Stack empty
+			break;
+#endif
+		default:
+		//Update the board after player has inputted
+		board_c.UpdateBoard((int)ui8Row, (int)ui8Col, (bPlayer1Turn ? PLAYER1MARKER : PLAYER2MARKER));
+#ifdef UNDOMOVE
+		Stack_Push((int)ui8Row, (int)ui8Row);
+#endif
 	}
-	
-	//Update the board after player has inputted
-	board_c.UpdateBoard((int)ui8Row, (int)ui8Col, (bPlayer1Turn ? PLAYER1MARKER : PLAYER2MARKER));
 
 	if (board_c.CheckFull())
 	{
@@ -152,6 +172,9 @@ newgame:		cout << endl << "Do you want to start a new game?(y/n) ";
 		while ((cAns != 'y') && (cAns != 'Y') && (cAns != 'n') && (cAns != 'N'))
 			cin >> cAns;
 		board_c.DestroyBoard();
+#ifdef UNDOMOVE
+		Stack_Free();	//release stack
+#endif
 		return (((cAns == 'y') || (cAns == 'Y')) ? GamePlay_Config : Menu);
 	}
 	
@@ -206,6 +229,7 @@ void Game_Information(void)
 	
 	cout << endl << "Player 1 turn:" << Alphabet[rand() % SAMPLEBOARD_HEIGHT] \
 		 << ", " << Alphabet[rand() % SAMPLEBOARD_WIDTH] << endl <<  endl;
+	SampleBoard.DestroyBoard();
 }
 
 /******************************************************************************
@@ -238,6 +262,13 @@ static bool Game_Playing_CheckingInput(string strInput, uint8_t *pRow, uint8_t *
 		*pRow = (uint8_t)'Q';
 		return true;
 	}
+#ifdef	UNDOMOVE
+	else if (strInput.at(i) == '-')
+	{
+		*pRow = (uint8_t)'-';
+		return true;
+	}
+#endif
 	else 
 	{
 		int iBoardWidth, iBoardHeight;

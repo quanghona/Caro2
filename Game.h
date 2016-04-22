@@ -3,7 +3,7 @@
  * for handle the states of the game.
  *
  * Date: April 2016
- * Rev: 1.1
+ * Rev: 1.2
  * Author: Team 8
  * Group: TNMT - Fundamental of C++ Programming
  * Ho Chi Minh University of Technology
@@ -11,6 +11,7 @@
  * Revision History:
  * - 1.0: First release
  * - 1.1: add one more state - BeforeQuit, undefine PLAYER1X
+ * - 1.2: define UNDOMOVE
 */
 
 #ifndef __GAME_H__
@@ -25,6 +26,8 @@
 #define PLAYER1MARKER			'O'
 #define PLAYER2MARKER			'X'	
 #endif
+	
+#define UNDOMOVE
 
 typedef enum 
 {
