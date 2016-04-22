@@ -28,6 +28,7 @@
 #endif
 	
 #define UNDOMOVE
+#define MOVECURSOR
 
 typedef enum 
 {

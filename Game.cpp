@@ -27,6 +27,14 @@
 #ifdef UNDOMOVE
 #include "RingStack.h"
 #endif
+#ifdef MOVECURSOR
+#include "CursorPos.h"
+#define KEY_UP		72
+#define KEY_LEFT	75
+#define KEY_RIGHT	77
+#define KEY_DOWN	80
+#define KEY_ENTER	13
+#endif
 using namespace std;
 
 /****************************Private Definitions******************************/
@@ -116,12 +124,67 @@ State Game_Menu(void)
 State Game_Playing(void)
 {
 	string strInput;
-	uint8_t ui8Row, ui8Col;
+	uint8_t ui8Row = 0, ui8Col = 0;
 	//Draw the board
 	system("cls");
 	board_c.DrawBoard();
 	
 	//Ask the player to input something
+#ifdef MOVECURSOR
+	cout << endl << "Player " << (-(int)bPlayer1Turn + 2) << " turn: ";
+	SetCurPos(2, 1);
+	int Width, Height;
+	board_c.GetParameters(&Width, &Height);
+	do {
+		char cInput = _getch();	//input
+		switch(cInput)		//handle arrow keys and some special cases
+		{
+		case KEY_UP:
+		case 'w':
+		case 'W':
+			if (ui8Row)	ui8Row--;
+			break;
+
+		case KEY_DOWN:
+		case 's':
+		case 'S':
+			if (ui8Row < Height - 1)	ui8Row++;
+			break;
+
+		case KEY_LEFT:
+		case 'a':
+		case 'A':
+			if (ui8Col)	ui8Col--;
+			break;
+
+		case KEY_RIGHT:
+		case 'd':
+		case 'D':
+			if (ui8Col < Width - 1)		ui8Col++;
+			break;
+
+		case '!':
+		case '~':
+			ui8Row = 'Q';
+			break;
+
+		case '-':
+			ui8Row = '-';
+			break;
+
+		case KEY_ENTER:
+			break;
+
+		default:
+			continue;
+		}
+		//Escape the loop if special case detected
+		if (cInput == KEY_ENTER || ui8Row == 'Q' || ui8Row == '-')
+			break;
+		else SetCurPos(2+2*ui8Col, ui8Row + 1);	//execute the arrow key command
+	} while(1);
+#else
+
 	do
 	{
 		strInput = "";
@@ -130,7 +193,8 @@ State Game_Playing(void)
 		getline(cin, strInput);
 	//Loop until player input correctly
 	} while (!Game_Playing_CheckingInput(strInput, &ui8Row, &ui8Col));
-	
+#endif
+
 	//if player input 'q' or 'Q', the program will get out to menu immediately
 	switch (ui8Row)
 	{
@@ -147,6 +211,10 @@ State Game_Playing(void)
 			if (ui8Row != (uint8_t)-1)
 				board_c.UpdateBoard((int)ui8Row, (int)ui8Col, ' ');
 			else{
+#ifdef MOVECURSOR
+				SetCurPos(0, Height + 4);
+#endif
+
 				cout << "No move to undo!" << endl;		//Stack empty
 				Sleep(500);
 				return GamePlay_Playing;
