@@ -69,7 +69,6 @@ static unsigned int uiCount;
  *****************************************************************************/
 void CaroBoard::DrawBoard(void)
 {
-	system("cls");
 	//Draw first line contain name of the columns
 #ifdef _EXPORT_TO_FILE_
 	ofstream ExportFile("gameTrace.txt", ios::ate);	//Writing at the end of the file
@@ -633,9 +632,9 @@ bool CaroBoard::ConfigBoard(int Width, int Height, int N)
 		else
 		{
 			this->Width = Width; this->Height = Height; this->N = N; uiCount = 0;
-			this->board = new int*[Height];
+			this->board = new Marker*[Height];
 			for (int i = 0; i < Height; i++)
-				this->board[i] = new int[Width];
+				this->board[i] = new Marker[Width];
 			
 			for (int i = 0, j = 0; (i < this->Height); (j < (this->Width - 1)) ? (j++) : (i++, j = 0))
 				this->board[i][j] = ' ';

@@ -64,7 +64,6 @@ void main()
 			case BeforeQuit:
 				cout << endl << "Thanks for playing this game!!" << endl;
 				GameState = Quit;
-				goto exit;
 				break;
 				
 			case Error:		//This case should never happen
@@ -72,7 +71,7 @@ void main()
 				break;
 		}
 	}
-exit:	_getch();
+	_getch();
 }
 
 /* End of Caro.cpp */

@@ -12,7 +12,7 @@
  *  - 1.1: update Game_Information(), fix and update Game_Playing_CheckingInput()
  * 			fix Game_Menu()
  * 	- 1.2: update Game_Information(), update Game_Playing(), update Game_Playing_CheckingInput()
- * this revision allow user to be able to undo moves
+ * this revision allow user able to undo moves
 */
 
 #include <iostream>
@@ -24,7 +24,7 @@
 #include "Game.h"
 
 #ifdef UNDOMOVE
-#include "Stack/RingStack.h"
+#include "RingStack.h"
 #endif
 using namespace std;
 
@@ -63,6 +63,7 @@ State Game_Menu(void)
 	uint8_t ui8Input = 0;
 	
 	//Print the menu for user to choose;
+	//system("cls");
 	cout << "Caro - Menu" << endl;
 	cout << "1. Start new game" << endl;
 	cout << "2. Information" << endl;
@@ -116,6 +117,7 @@ State Game_Playing(void)
 	string strInput;
 	uint8_t ui8Row, ui8Col;
 	//Draw the board
+	system("cls");
 	board_c.DrawBoard();
 	
 	//Ask the player to input something
@@ -133,21 +135,28 @@ State Game_Playing(void)
 	{
 		case ((uint8_t)'Q'):
 			board_c.DestroyBoard();
+#ifdef UNDOMOVE
+			Stack_Free();
+#endif
 			return Menu;
 			break;
 #ifdef	UNDOMOVE		
 		case ((uint8_t)'-'):		//if player press '-', it will undo 1 move
 			Stack_Pop(&ui8Row, &ui8Col);
-			if (ui8Row != -1)
+			if (ui8Row != (uint8_t)-1)
 				board_c.UpdateBoard((int)ui8Row, (int)ui8Col, ' ');
-			else cout << "No move to undo!" << endl;		//Stack empty
+			else{
+				cout << "No move to undo!" << endl;		//Stack empty
+				_sleep(500);
+				return GamePlay_Playing;
+			}
 			break;
 #endif
 		default:
 		//Update the board after player has inputted
 		board_c.UpdateBoard((int)ui8Row, (int)ui8Col, (bPlayer1Turn ? PLAYER1MARKER : PLAYER2MARKER));
 #ifdef UNDOMOVE
-		Stack_Push((int)ui8Row, (int)ui8Row);
+		Stack_Push(ui8Row, ui8Col);
 #endif
 	}
 

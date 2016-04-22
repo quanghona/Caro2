@@ -1,17 +1,18 @@
 /*
- * RingStack.h - Header file of ring stack list. A ring stack is similar to normal stack
- * but when it overloaded, it will overwrite the bottom of the stack and the bottom move up 1 level
+ * RingStack.h - Header file of ring stack list. A ring stack is similar to
+ * normal stack but when it overloaded, it will overwrite the bottom of the
+ * stack and the bottom move up 1 level.
  * 
  * 
- * 	  Bottom = Top = NULL     Bottom				Top	 Bottom
+ * 	  Bottom = Top = nullptr     Bottom				Top	 Bottom
  *	  							|					 |	 |
  *	  							--------			--------	
  * 	  								    |			|		|
  *	  									| - Top		--------
  * 	  	Stack Empty				Normal case			Stack overloaded
  *
- * Note: When Stack is overloaded, the program not allocate new memory to the stack but only replace
- * its value
+ * Note: When Stack is overloaded, the program not allocate new memory to the
+ * stack but only replace its value
  *
  * Date: April 2016
  * Rev: 1.0
@@ -21,6 +22,7 @@
  */
  
 #include "RingStack.h"
+#include <stdint.h>
 
 #define STACK_SIZE	50
 
@@ -29,23 +31,27 @@ static unsigned int Stack_uiCount;
 
 void Stack_Init()
 {
-	pTop = pBot = NULL;
+	//pTop = new Node;
+	//pBot = new Node;
 	Stack_uiCount = 0;
 }
 
-void Stack_Push( int Row, int Col)
+void Stack_Push(uint8_t Row, uint8_t Col)
 {
-	if (Stack_uiCount < STACK_MAXSIZE)
+	if (Stack_uiCount < STACK_SIZE)
 	{
 		Node *newNode = new Node;
 		newNode->Col = Col;
 		newNode->Row = Row;
 		newNode->pPre = pTop;
-		pTop->pNext = newNode;
-		newNode->pNext = NULL;
+		newNode->pNext = nullptr;
+
+		if (!Stack_uiCount)	//handle when Stack_uiCount 0->1
+			pBot = newNode;	
+		else pTop->pNext = newNode;
+		
 		pTop = newNode;
-		if (!Stack_uiCount)
-			pBot = newNode;
+
 		Stack_uiCount++;
 	}
 	else
@@ -56,33 +62,35 @@ void Stack_Push( int Row, int Col)
 		pTop->pNext = pBot;
 		pTop = pBot;
 		pBot = pBot->pNext;
-		pBot->pPre = NULL;
-		pTop->pNext = NULL;
+		pBot->pPre = nullptr;
+		pTop->pNext = nullptr;
 	}
 }
-void Stack_Pop(int *Row, int *Col)
+void Stack_Pop(uint8_t *Row, uint8_t *Col)
 {
 	if (!Stack_uiCount)
-		*Row = -1;
+		*Row = (uint8_t)-1;
 	else
 	{
 		*Row = pTop->Row;
 		*Col = pTop->Col;
-		pTop = pTop->pPre;
+		if (pTop == pBot)
+			pTop->pNext = pTop;	//handle the Stack_uiCount 1->0
+		else
+			pTop = pTop->pPre;
 		delete pTop->pNext;
-		pTop->pNext = NULL;
+		if (pTop != pBot)
+			pTop->pNext = nullptr;
 		Stack_uiCount--;
 	}
 }
 
 void Stack_Free()
 {
-	for (int i = 1; i <= Stack_uiCount; i++)
-	{
-		pTop = pTop->pPre;
-		delete pTop->pNext;
-	}
-	Stack_uiCount = 0;
+	uint8_t temp = 0;
+	while(Stack_uiCount) Stack_Pop(&temp, &temp);
+	//delete pTop, pBot;
+	//Stack_uiCount = 0;
 }
 
 /* End of RingStack.h*/

@@ -19,20 +19,22 @@
  * e-mail: lyhonquang@gmail.com
  * Ho Chi Minh University of Technology
  */
+
+#include <stdint.h>
  
 #ifndef	__RINGSTACK_H__
 #define __RINGSTACK_H__
 
 /*******************************Definitions***********************************/
-typedef struct Node {
+typedef struct NODE{
 	int Col, Row;
-	Node *pNext, *pPre;
-};
+	NODE *pNext, *pPre;
+} Node;
 
 /****************************Function prototypes******************************/
 void Stack_Init();
-void Stack_Push(int Row, int Col);
-void Stack_Pop(int *Row, int *Col);
+void Stack_Push(uint8_t Row, uint8_t Col);
+void Stack_Pop(uint8_t *Row, uint8_t *Col);
 void Stack_Free();
 
 #endif
