@@ -29,6 +29,13 @@
 static Node *pTop, *pBot;
 static unsigned int Stack_uiCount;
 
+/******************************************************************************
+ * Initialize Stack
+ *
+ * Parameter: none
+ *
+ * Return: none
+ *****************************************************************************/
 void Stack_Init()
 {
 	//pTop = new Node;
@@ -36,6 +43,15 @@ void Stack_Init()
 	Stack_uiCount = 0;
 }
 
+/******************************************************************************
+ * Push stack
+ *
+ * Parameter:
+ *	Row: row position
+ *  Col: Column position
+ *
+ * Return: none
+ *****************************************************************************/
 void Stack_Push(uint8_t Row, uint8_t Col)
 {
 	if (Stack_uiCount < STACK_SIZE)
@@ -66,6 +82,16 @@ void Stack_Push(uint8_t Row, uint8_t Col)
 		pTop->pNext = nullptr;
 	}
 }
+
+/******************************************************************************
+ * Pop stack
+ *
+ * Parameter:
+ *	*Row: pointer to row result
+ *	*Col: pointer to Col result
+ *
+ * Return: none
+ *****************************************************************************/
 void Stack_Pop(uint8_t *Row, uint8_t *Col)
 {
 	if (!Stack_uiCount)
@@ -85,6 +111,13 @@ void Stack_Pop(uint8_t *Row, uint8_t *Col)
 	}
 }
 
+/******************************************************************************
+ * Release Stack
+ *
+ * Parameter: none
+ *
+ * Return: none
+ *****************************************************************************/
 void Stack_Free()
 {
 	uint8_t temp = 0;
