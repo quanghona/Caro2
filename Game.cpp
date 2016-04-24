@@ -2,7 +2,7 @@
  * Game.cpp - C++ Source file for handling the game states
  * 
  * Date: April 2016
- * Rev: 1.3
+ * Rev: 1.4
  * Author: Team 8
  * Group: TNMT - Fundamental of C++ Programming
  * Ho Chi Minh University of Technology
@@ -15,6 +15,7 @@
  * this revision allow user able to undo moves
  *  - 1.3: Update Game_Playing(), this version allow player to move the cursor on the screen,
  * and interract with program via that cursor
+ *  - 1.4: fix bug
 */
 
 #include <iostream>
@@ -181,7 +182,13 @@ State Game_Playing(void)
 			continue;
 		}
 		//Escape the loop if special case detected
-		if (cInput == KEY_ENTER || ui8Row == 'Q' || ui8Row == '-')
+		if (cInput == KEY_ENTER)
+		{
+			if (!board_c.CheckMarkPos((int)ui8Row,(int)ui8Col))
+				continue;
+			else break;
+		}
+		else if (ui8Row == 'Q' || ui8Row == '-')
 			break;
 		else SetCurPos(2+2*ui8Col, ui8Row + 1);	//execute the arrow key command
 	} while(1);

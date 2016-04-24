@@ -3,7 +3,7 @@
  * Handle everything related to the board in the game Caro
  * 
  * Date: April 2016
- * Rev: 1.2
+ * Rev: 1.3
  * Author: Team 8
  * Group: TNMT - Fundamental of C++ Programming
  * Ho Chi Minh University of Technology
@@ -13,6 +13,7 @@
  *  - 1.1: fixed function configBoard(), bring Alphabet table to Board.h,
  * add ConvertChartoNum()
  * 	- 1.2: add ConfigBoard(int, int int)
+ *  - 1.3: define Marker, define Color marker
 */
 
 #ifndef __BOARD_H__
@@ -25,6 +26,23 @@
 #define BOARD_MAXHEIGHT			25
 #define BOARD_MAXN				5
 #define BOARD_MINN				3
+
+/*Player marker type*/
+//#define PLAYER1X
+#ifdef PLAYER1X
+#define PLAYER1MARKER			'X'
+#define PLAYER2MARKER			'O'
+#else
+#define PLAYER1MARKER			'O'
+#define PLAYER2MARKER			'X'	
+#endif
+
+#define COLOR_MARKER
+#ifdef COLOR_MARKER
+#define COLOR_RED	0x0C
+#define COLOR_BLUE	0x09
+#define COLOR_WHITE	0x07
+#endif
 
 typedef char Marker;
 const char Alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";	//Alphabet table

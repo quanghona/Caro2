@@ -3,7 +3,7 @@
  * Handle everything related to the board in the game Caro
  * 
  * Date: April 2016
- * Rev: 1.2
+ * Rev: 1.3
  * Author: Team 8
  * Group: TNMT - Fundamental of C++ Programming
  * Ho Chi Minh University of Technology
@@ -13,12 +13,16 @@
  *  - 1.1: updadte function ConfigBoard(), bring Alphabet table to Board.h, fix 
  * UpdateBoard() and CheckBoard(), add ConvertChartoNum()
  * 	- 1.2: add ConfigBoard(int, int, int), update ConfigBoard(), update UpdateBoard()
+ *  - 1.3: Color marker available
 */
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <stdint.h>
 #include "Board.h"
+#ifdef COLOR_MARKER
+#include <Windows.h>
+#endif
 using namespace std;
 
 /****************************Private Definitions******************************/
@@ -97,11 +101,30 @@ void CaroBoard::DrawBoard(void)
 #endif
 		for (int j = 0; j < this->Width; j++)
 		{
+#ifdef COLOR_MARKER
+		switch(board[i][j])
+		{
+		case 'O':
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), COLOR_RED);
+			break;
+
+		case 'X':
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), COLOR_BLUE);
+			break;
+
+		default:
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), COLOR_WHITE);
+		}
+#endif
+
 			cout << " " << this->board[i][j];
 #ifdef _EXPORT_TO_FILE_
 			ExportFile << " " << this->board[i][j];
 #endif			
 		}
+#ifdef COLOR_MARKER
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), COLOR_WHITE);
+#endif
 		cout << "*" << endl;
 #ifdef _EXPORT_TO_FILE_	
 		ExportFile << "*" << endl;
