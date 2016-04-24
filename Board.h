@@ -38,11 +38,6 @@
 #endif
 
 #define COLOR_MARKER
-#ifdef COLOR_MARKER
-#define COLOR_RED	0x0C
-#define COLOR_BLUE	0x09
-#define COLOR_WHITE	0x07
-#endif
 
 typedef char Marker;
 const char Alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";	//Alphabet table
