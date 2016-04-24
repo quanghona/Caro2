@@ -15,7 +15,7 @@
  * this revision allow user able to undo moves
  *  - 1.3: Update Game_Playing(), this version allow player to move the cursor on the screen,
  * and interract with program via that cursor
- *  - 1.4: fix bug
+ *  - 1.4: fix bug, make program more virtualized
 */
 
 #include <iostream>
@@ -48,10 +48,19 @@ using namespace std;
 /*************************Private function prototypes*************************/
 static bool Game_Playing_CheckingInput(string strInput, uint8_t *pRow, uint8_t *pCol);
 static bool Game_Menu_CheckInput(uint8_t ui8Input);
+static void Game_Menu_SetScreenSize( unsigned width, unsigned height );
 
 /*********************************Variables***********************************/
 extern CaroBoard board_c;
 static bool bPlayer1Turn;
+const char CaroImg[][29] = {"  xxx    oo   xxxx     ooo  ",
+							" x   x  o  o  x   x   o   o ",
+							"x      o    o x    x o     o",
+							"x      o    o x   x  o     o",
+							"x      oooooo xxxx   o     o",
+							"x      o    o x   x  o     o",
+							" x   x o    o x    x  o   o ",
+							"  xxx  o    o x    x   ooo  "};
 
 /****************************Function definitions*****************************/
 
@@ -76,15 +85,31 @@ State Game_Menu(void)
 	
 	//Print the menu for user to choose;
 	//system("cls");
-	cout << "Caro - Menu" << endl;
-	cout << "1. Start new game" << endl;
-	cout << "2. Information" << endl;
-	cout << "3. Quit" << endl;
+	Game_Menu_SetScreenSize(70, 30);
+
+	for (int i =  0; i < 8; i++)
+	{
+		SetCurPos(22, i+3);
+		for (int j = 0; j < 29; j++)
+			cout << CaroImg[i][j];
+	}
+	//make the cursor disapear
+	PCONSOLE_CURSOR_INFO cci = new CONSOLE_CURSOR_INFO;
+	GetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), cci);
+	cci->bVisible = false;
+	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), cci);
+
+	cout << endl;
+	SetCurPos(25, 15);
+	cout << "1. Start new game";
+	SetCurPos(25, 16);
+	cout << "2. Information";
+	SetCurPos(25, 17);
+	cout << "3. Quit";
 
 	//Let's the user choose the option
 	do
 	{
-		cout << "Please pick your choice: ";
 		ui8Input = _getch();
 	} while (!Game_Menu_CheckInput(ui8Input));
 
@@ -96,12 +121,15 @@ State Game_Menu(void)
 #ifdef UNDOMOVE
 			Stack_Init();	//initialize stack
 #endif
+			//Set the cursor visible again before switching to play game mode
+			cci->bVisible = true;
+			SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), cci);
+			delete cci;
 			return GamePlay_Config;
-			break;
 			
 		case '2':
+			delete cci;
 			return Information;
-			break;
 			
 		case '3':
 		case 'q':
@@ -310,7 +338,7 @@ void Game_Information(void)
 			}
 	}	
 	for (int i = 0; i < 9; i++)
-		SampleBoard.UpdateBoard(RandomPos[0][i], RandomPos[1][i], (i < 3 ? 'O' : (i < 6 ? 'X' : '#')));
+		SampleBoard.UpdateBoard(RandomPos[0][i], RandomPos[1][i], (i < 3 ? PLAYER1MARKER : (i < 6 ? PLAYER2MARKER : '#')));
 	
 	SampleBoard.DrawBoard();
 	
@@ -436,5 +464,23 @@ InErr:
 	 }
 	 return true;
  }
+
+static void Game_Menu_SetScreenSize( unsigned width, unsigned height )
+{
+	SMALL_RECT r;
+	COORD      c;
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	HANDLE hConOut = GetStdHandle( STD_OUTPUT_HANDLE );
+	GetConsoleScreenBufferInfo( hConOut, &csbi );
+
+	r.Left = r.Top = 0;
+	r.Right  = width - 1;
+	r.Bottom = height - 1;
+	SetConsoleWindowInfo( hConOut, true, &r );
+
+	c.X = width;
+	c.Y = height;
+	//SetConsoleScreenBufferSize( hConOut, c );
+}
 
 /* End of Game.cpp */
