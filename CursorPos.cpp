@@ -11,6 +11,8 @@
 #include "CursorPos.h"
 #include <Windows.h>
 
+/****************************Function definitions*****************************/
+	 
 /******************************************************************************
  * Set the Cusor Position in console window
  *

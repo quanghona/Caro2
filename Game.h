@@ -3,7 +3,7 @@
  * for handle the states of the game.
  *
  * Date: April 2016
- * Rev: 1.2
+ * Rev: 1.3
  * Author: Team 8
  * Group: TNMT - Fundamental of C++ Programming
  * Ho Chi Minh University of Technology
@@ -11,7 +11,9 @@
  * Revision History:
  * - 1.0: First release
  * - 1.1: add one more state - BeforeQuit, undefine PLAYER1X
- * - 1.2: define UNDOMOVE
+ * - 1.2: define UNDOMOVE. This version allow user to undo moves
+ * - 1.3: define MOVECURSOR. This version allow player to interract with program
+ * via cursor
 */
 
 #ifndef __GAME_H__
@@ -27,8 +29,8 @@
 #define PLAYER2MARKER			'X'	
 #endif
 	
-#define UNDOMOVE
-#define MOVECURSOR
+#define UNDOMOVE		//enable undo moves function
+#define MOVECURSOR		//enable the cursor moving function
 
 typedef enum 
 {
@@ -44,7 +46,6 @@ typedef enum
 State Game_Menu(void);
 State Game_Playing(void);
 void Game_Information(void);
-
 
 #endif
 

@@ -2,7 +2,7 @@
  * Game.cpp - C++ Source file for handling the game states
  * 
  * Date: April 2016
- * Rev: 1.2
+ * Rev: 1.3
  * Author: Team 8
  * Group: TNMT - Fundamental of C++ Programming
  * Ho Chi Minh University of Technology
@@ -13,6 +13,8 @@
  * 			fix Game_Menu()
  * 	- 1.2: update Game_Information(), update Game_Playing(), update Game_Playing_CheckingInput()
  * this revision allow user able to undo moves
+ *  - 1.3: Update Game_Playing(), this version allow player to move the cursor on the screen,
+ * and interract with program via that cursor
 */
 
 #include <iostream>
@@ -167,11 +169,11 @@ State Game_Playing(void)
 		case '~':
 			ui8Row = 'Q';
 			break;
-
+#ifdef UNDOMOVE
 		case '-':
 			ui8Row = '-';
 			break;
-
+#endif
 		case KEY_ENTER:
 			break;
 

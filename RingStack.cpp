@@ -24,10 +24,14 @@
 #include "RingStack.h"
 #include <stdint.h>
 
+/*******************************Definitions***********************************/
 #define STACK_SIZE	50
 
+/*********************************Variables***********************************/
 static Node *pTop, *pBot;
 static unsigned int Stack_uiCount;
+
+/****************************Function definitions*****************************/
 
 /******************************************************************************
  * Initialize Stack
@@ -127,3 +131,4 @@ void Stack_Free()
 }
 
 /* End of RingStack.h*/
+	
