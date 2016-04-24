@@ -104,11 +104,11 @@ void CaroBoard::DrawBoard(void)
 #ifdef COLOR_MARKER
 		switch(board[i][j])
 		{
-		case 'O':
+		case PLAYER1MARKER:
 			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_INTENSITY);
 			break;
 
-		case 'X':
+		case PLAYER2MARKER:
 			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 			break;
 
