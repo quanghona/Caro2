@@ -13,6 +13,13 @@
  *  4. Game Play  : 2 players playing turn by turn.
  *  5. Quit       : Quit the game.
  * 
+ * Feature: 
+ *  - Undo move
+ *  - Control using cursor
+ *  - Graphics, Color
+ *  - Save history
+ *  - Config using external file
+ * 
  * Date: April 2016
  * Rev: 1.2
  * Author: Team 8
@@ -23,6 +30,7 @@
  *  - 1.0: First release
  *  - 1.1: fixed main()
  *  - 1.2: little fix
+ *  - 1.3: add one more state: BeforeQuit
 */
 
 #include "Game.h"
