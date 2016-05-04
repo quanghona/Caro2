@@ -468,18 +468,18 @@ InErr:
 static void Game_Menu_SetScreenSize( unsigned width, unsigned height )
 {
 	SMALL_RECT r;
-	COORD      c;
-	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	//COORD      c;
+	//CONSOLE_SCREEN_BUFFER_INFO csbi;
 	HANDLE hConOut = GetStdHandle( STD_OUTPUT_HANDLE );
-	GetConsoleScreenBufferInfo( hConOut, &csbi );
+	//GetConsoleScreenBufferInfo( hConOut, &csbi );
 
 	r.Left = r.Top = 0;
 	r.Right  = width - 1;
 	r.Bottom = height - 1;
 	SetConsoleWindowInfo( hConOut, true, &r );
 
-	c.X = width;
-	c.Y = height;
+	//c.X = width;
+	//c.Y = height;
 	//SetConsoleScreenBufferSize( hConOut, c );
 }
 
