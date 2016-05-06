@@ -30,8 +30,8 @@
 #ifdef UNDOMOVE
 #include "RingStack.h"
 #endif
-#ifdef MOVECURSOR
 #include "CursorPos.h"
+#ifdef MOVECURSOR
 #define KEY_UP		72
 #define KEY_LEFT	75
 #define KEY_RIGHT	77

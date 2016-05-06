@@ -75,7 +75,7 @@ void CaroBoard::DrawBoard(void)
 {
 	//Draw first line contain name of the columns
 #ifdef _EXPORT_TO_FILE_
-	ofstream ExportFile("gameTrace.txt", ios::ate);	//Writing at the end of the file
+	ofstream ExportFile("gameTrace.txt", ios::app);	//Writing at the end of the file
 	ExportFile << "*";
 #endif
 	cout << "*";

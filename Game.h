@@ -21,7 +21,7 @@
 #define __GAME_H__
 	
 #define UNDOMOVE		//enable undo moves function
-#define MOVECURSOR		//enable the cursor moving function
+//#define MOVECURSOR		//enable the cursor moving function
 
 typedef enum 
 {
